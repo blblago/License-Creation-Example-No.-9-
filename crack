@@ -1,0 +1,37 @@
+<?php
+
+	echo "Ключ для поддомена - " . getCrack()[0] . "<br />";
+	echo "Ключ для домена - " . getCrack()[1] . "<br />";
+
+	function getHost()
+    {
+        $host1 = $host2 = "localhost";
+        $srv = str_replace("www.", "", $_SERVER["SERVER_NAME"]);
+        $srv_array = explode(".", $srv);
+        if (count($srv_array) < 3) {
+            $host1 = $srv;
+        }
+        if (count($srv_array) == 3) {
+            $host1 = $srv;
+            $host2 = implode(".", array_slice($srv_array, 1));
+        }
+        if (count($srv_array) == 4) {
+            $host1 = implode(".", array_slice($srv_array, 1));
+            $host2 = implode(".", array_slice($srv_array, 2));
+        }
+        if (count($srv_array) == 5) {
+            $host1 = implode(".", array_slice($srv_array, 2));
+            $host2 = implode(".", array_slice($srv_array, 3));
+        }
+        $output1 = sha1($host1 . sha1("N7mBJji29S1x" . sha1($host1)));
+        $output2 = sha1($host2 . sha1("N7mBJji29S1x" . sha1($host2)));
+        return array($output1, $output2);
+    }
+	
+	function getCrack()
+	{
+		$key_1 = password_hash ( getHost()[0], PASSWORD_DEFAULT );
+		$key_2 = password_hash ( getHost()[1], PASSWORD_DEFAULT );
+		
+		return array($key_1, $key_2);
+	}
